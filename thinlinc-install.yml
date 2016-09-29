@@ -1,0 +1,106 @@
+---
+- hosts: thinlinc
+
+  vars:
+    pkgdir: "/root/tl-{{thinlinc_version}}-server/packages"
+    rpm64files:
+      - "{{ pkgdir }}/thinlinc-rdesktop-{{ thinlinc_version }}-{{ thinlinc_build }}.x86_64.rpm"
+      - "{{ pkgdir }}/thinlinc-tladm-{{ thinlinc_version }}-{{ thinlinc_build }}.x86_64.rpm"
+      - "{{ pkgdir }}/thinlinc-tlmisc-{{ thinlinc_version }}-{{ thinlinc_build }}.x86_64.rpm"
+      - "{{ pkgdir }}/thinlinc-tlmisc-libs32-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+      - "{{ pkgdir }}/thinlinc-tlmisc-libs-{{ thinlinc_version }}-{{ thinlinc_build }}.x86_64.rpm"
+      - "{{ pkgdir }}/thinlinc-tlprinter-{{ thinlinc_version }}-{{ thinlinc_build }}.noarch.rpm"
+      - "{{ pkgdir }}/thinlinc-webaccess-{{ thinlinc_version }}-{{ thinlinc_build }}.noarch.rpm"
+      - "{{ pkgdir }}/thinlinc-vnc-server-{{ thinlinc_version }}-{{ thinlinc_build }}.x86_64.rpm"
+      - "{{ pkgdir }}/thinlinc-vsm-{{ thinlinc_version }}-{{ thinlinc_build }}.x86_64.rpm"
+    rpm32files:
+      - "{{ pkgdir }}/thinlinc-rdesktop-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+      - "{{ pkgdir }}/thinlinc-tladm-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+      - "{{ pkgdir }}/thinlinc-tlmisc-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+      - "{{ pkgdir }}/thinlinc-tlmisc-libs32-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+      - "{{ pkgdir }}/thinlinc-tlprinter-{{ thinlinc_version }}-{{ thinlinc_build }}.noarch.rpm"
+      - "{{ pkgdir }}/thinlinc-webaccess-{{ thinlinc_version }}-{{ thinlinc_build }}.noarch.rpm"
+      - "{{ pkgdir }}/thinlinc-vnc-server-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+      - "{{ pkgdir }}/thinlinc-vsm-{{ thinlinc_version }}-{{ thinlinc_build }}.i686.rpm"
+    deb64files:
+      - "{{ pkgdir }}/thinlinc-rdesktop_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+      - "{{ pkgdir }}/thinlinc-tladm_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+      - "{{ pkgdir }}/thinlinc-tlmisc_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+      - "{{ pkgdir }}/thinlinc-tlmisc-libs32_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+      - "{{ pkgdir }}/thinlinc-tlmisc-libs_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+      - "{{ pkgdir }}/thinlinc-tlprinter_{{ thinlinc_version }}-{{ thinlinc_build }}_all.deb"
+      - "{{ pkgdir }}/thinlinc-webaccess_{{ thinlinc_version }}-{{ thinlinc_build }}_all.deb"
+      - "{{ pkgdir }}/thinlinc-vnc-server_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+      - "{{ pkgdir }}/thinlinc-vsm_{{ thinlinc_version }}-{{ thinlinc_build }}_amd64.deb"
+    deb32files:
+      - "{{ pkgdir }}/thinlinc-rdesktop_{{ thinlinc_version }}-{{ thinlinc_build }}_i386.deb"
+      - "{{ pkgdir }}/thinlinc-tladm_{{ thinlinc_version }}-{{ thinlinc_build }}_i386.deb"
+      - "{{ pkgdir }}/thinlinc-tlmisc_{{ thinlinc_version }}-{{ thinlinc_build }}_i386.deb"
+      - "{{ pkgdir }}/thinlinc-tlmisc-libs32_{{ thinlinc_version }}-{{ thinlinc_build }}_i386.deb"
+      - "{{ pkgdir }}/thinlinc-tlprinter_{{ thinlinc_version }}-{{ thinlinc_build }}_all.deb"
+      - "{{ pkgdir }}/thinlinc-webaccess_{{ thinlinc_version }}-{{ thinlinc_build }}_all.deb"
+      - "{{ pkgdir }}/thinlinc-vnc-server_{{ thinlinc_version }}-{{ thinlinc_build }}_i386.deb"
+      - "{{ pkgdir }}/thinlinc-vsm_{{ thinlinc_version }}-{{ thinlinc_build }}_i386.deb"
+
+  tasks:
+    - name: Download and unpack server bundle
+      unarchive:
+        src: "{{ thinlinc_server_bundle }}"
+        dest: /root
+
+
+    - name: Install ThinLinc Software (yum64)
+      yum: name=rpm64files state=installed
+      when: ansible_architecture == "x86_64" and ansible_os_family == "RedHat"
+
+    - name: Install ThinLinc Software (yum32)
+      yum: name=rpm32files state=installed
+      when: ansible_architecture == "i386" and ansible_os_family == "RedHat"
+
+    - name: Install ThinLinc Software (rpm64)
+      command: rpm -i --replacepkgs {{ " ".join(rpm64files) }}
+      when: ansible_architecture == "x86_64" and ansible_os_family == "Suse"
+
+    - name: Install ThinLinc Software (rpm32)
+      command: rpm -i --replacepkgs {{ " ".join(rpm32files) }}
+      when: ansible_architecture == "i386" and ansible_os_family == "Suse"
+
+    - name: Install ThinLinc Software (deb64)
+      command: dpkg -i {{ " ".join(deb64files) }}
+      when: ansible_architecture == "x86_64" and ansible_os_family in ["Debian", "Linuxmint", "Ubuntu"]
+
+    - name: Install ThinLinc Software (deb32)
+      command: dpkg -i {{ " ".join(deb32files) }}
+      when: ansible_architecture == "i386" and ansible_os_family in ["Debian", "Linuxmint", "Ubuntu"]
+
+    - name: Copy in tlsetup.answers
+      template: src=files/tl-setup.answers dest=/root/tl-setup.answers
+
+    - name: Run tl-setup
+      command: /opt/thinlinc/sbin/tl-setup -a /root/tl-setup.answers
+
+- hosts: thinlinc-masters
+  tasks:
+
+    - name: Configure list of agent servers
+      tlconfig:
+        param: /vsmserver/terminalservers
+        value: "{{' '.join(groups['thinlinc-agents'])}}"
+
+    - name: Restart ThinLinc Master Services
+      service:
+        name:  vsmserver
+        state: restarted
+
+- hosts: thinlinc-agents
+  tasks:
+
+  - name: Configure agent hostnames
+    tlconfig:
+      param: /vsmagent/agent_hostname
+      value: "{{ ansible_fqdn }}"
+
+  - name: Restart vsmagent
+    service:
+      name:  vsmagent
+      state: restarted

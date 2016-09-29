@@ -1,0 +1,13 @@
+# Server(s) to be configured as Masters:
+[thinlinc-masters]
+master.example.com
+
+# Servers to be configured as Agents:
+[thinlinc-agents]
+master.example.com
+agent-1.example.com
+agent-2.example.com
+
+[thinlinc:children]
+thinlinc-masters
+thinlinc-agents

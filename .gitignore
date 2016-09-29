@@ -1,0 +1,5 @@
+inventory
+tl-*-server.zip
+*.retry
+*~
+ansible-thinlinc-*.tar.gz
