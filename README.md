@@ -1,3 +1,8 @@
+# Unmaintained repository
+
+This repository is unmaintained. Development has moved to an [Ansible role
+for the ThinLinc Server](https://github.com/cendio/ansible-role-thinlinc-server).
+
 # ThinLinc Ansible module
 
 This repository provides an Ansible module for installing and setting
@@ -31,7 +36,3 @@ What you need to do:
 # License
 
 GPLv3. (See LICENSE)
-
-# Contributions
-
-Pull requests and issues are welcome.
